@@ -1,388 +1,559 @@
-### **Git Notes**
+This document provides a comprehensive guide to Git and GitHub, covering everything from fundamental concepts to advanced operations.
 
----
+-----
 
-#### **Important Parts:**
+## Git Notes
 
-1. **Git Core**
+-----
 
-   * Introduction
-   * Installation
-   * Git Basics
-   * Committing in Detail
-   * Branching
-   * Merging
+### What is Git?
 
-2. **Git Medium Difficulty Topics**
+**Git** is a **Version Control System** (VCS).
 
-   * Diffing
-   * Stashing
-   * Undoing Changes
+### What is a VCS?
 
-3. **GitHub**
+A **Version Control System** (VCS) is software that tracks and manages changes to files, typically code or documents, over time.
 
-   * Introduction
-   * Fetching & Pulling
-   * GitHub Oddities
-   * Collaborative Workflows
+### Git vs. GitHub: What's the Difference?
 
-4. **Advanced Git Concepts**
+  * **Git** is a version control system that operates locally and doesn't require an internet connection.
+  * **GitHub** is a web service that hosts Git repositories in the cloud, enabling collaboration and sharing.
 
-   * Rebasing
-   * Interactive Rebasing
-   * Git Tags
-   * Git Behind the Scenes
-   * Reflogs
-   * Custom Aliases
+-----
 
----
+### Git Core Concepts
 
-### **What is Git?**
+This section covers the foundational aspects of Git, essential for anyone starting with version control.
 
-Git is a **Version Control System** (VCS).
+#### Git Installation and Basic Configuration
 
-### **What is VCS?**
+Before you begin using Git, you'll need to install it and configure your identity.
 
-A **Version Control System** (VCS) is software that tracks and manages changes to files, usually code or documents.
+  * **Configure Git Username and Email:**
+    These credentials are used to identify you in the commit history.
 
-### **Git vs GitHub: What's the Difference?**
+      * To set your username globally:
+        ```bash
+        git config --global user.name "Your Name"
+        ```
+      * To retrieve your configured username:
+        ```bash
+        git config user.name
+        ```
+      * To set your email globally:
+        ```bash
+        git config --global user.email "<email@example.com>"
+        ```
+      * To retrieve your configured email:
+        ```bash
+        git config user.email
+        ```
 
-* **Git** is a version control system (VCS); it doesn't require an internet connection. You can download and use it locally.
-* **GitHub** is a web service that hosts Git repositories in the cloud and allows for collaboration.
+#### Git Basics: Initializing and Managing Repositories
 
----
+  * `git init`: Initializes a new Git repository in the current directory. This creates a hidden `.git` folder.
 
-### **Configure Git Username and Email:**
+  * `ls -a`: Lists all contents of a directory, including hidden files like `.git`.
 
-* To set username:
+  * `rm -rf .git`: Deletes the `.git` folder, effectively removing Git's tracking from the current directory.
 
-  ```bash
-  git config --global user.name "Your Name"
-  ```
+      * **Note:** Do not initialize a repository inside another existing repository.
 
-* To get username:
+  * `git status`: Displays the current state of your repository, showing changes that are staged, unstaged, or untracked.
 
-  ```bash
-  git config user.name
-  ```
+#### Committing in Detail: The Git Workflow
 
-* To set email:
+The Git commit workflow involves three main areas:
 
-  ```bash
-  git config --global user.email "<email@example.com>"
-  ```
+1.  **Working Directory:** Your project files on your local machine.
+2.  **Staging Area (Index):** A temporary area where you prepare changes to be committed.
+3.  **Repository:** The database where Git stores your project's history in the form of commits.
 
-* To get email:
+The flow of changes is: **Working Directory** $\\rightarrow$ `git add` $\\rightarrow$ **Staging Area** $\\rightarrow$ `git commit` $\\rightarrow$ **Repository**
 
-  ```bash
-  git config user.email
-  ```
+  * `git add <filename>`: Adds specific files from the working directory to the staging area.
+  * `git add .`: Adds all changes (new, modified, deleted files) from the working directory to the staging area.
+  * `git commit -m "Your commit message"`: Saves the staged changes to the repository as a new commit (a snapshot of your project at a point in time).
+      * **Atomic Commits:** It's best practice to keep each commit focused on a single logical task or feature.
 
----
+#### Editing and Configuring Your Git Commit Editor
 
-### **Git Commands:**
+When you run `git commit` without the `-m` flag, Git opens a text editor for you to write your commit message.
 
-* `git status`: Displays current status of your repository.
-* `git init`: Initializes a new repository.
-* `ls -a`: Lists all directories, including hidden ones.
-* `rm -rf .git`: Deletes the `.git` folder.
+  * **Vim** is often the default editor.
+  * To set **VS Code** as your default Git editor:
+    ```bash
+    git config --global core.editor "code --wait"
+    ```
 
-> **Note:** Do not initialize a repository inside another repository.
+#### Viewing Commit Logs
 
-#### **Git Commit Workflow:**
+  * `git log`: Displays a detailed history of all commits in the repository.
+  * `git log --oneline`: Shows a condensed, single-line view of the commit history, including the commit hash and message.
 
-1. **Working Directory** → `git add` → **Staging Area** → `git commit` → **Repository**
+#### Amending Commits
 
-* `git add`: Adds files to the staging area.
+You can modify the most recent commit, for example, to add forgotten files or change the commit message.
 
-* `git add .`: Adds all files to the staging area.
+  * Start with a commit:
+    ```bash
+    git commit -m "Initial commit"
+    ```
+  * If you forgot to add a file:
+    ```bash
+    git add forgotten_file.txt
+    git commit --amend
+    ```
+    This will open your editor with the previous commit message, allowing you to modify it or simply save and exit to amend the commit with the new staged changes.
+
+#### Ignoring Files with `.gitignore`
+
+The `.gitignore` file specifies intentionally untracked files that Git should ignore.
+
+1.  Create a file named `.gitignore` in the root of your repository.
+2.  Add patterns for files or directories to ignore. Examples:
+      * `.DS_Store`: Ignores macOS system files.
+      * `folderName/`: Ignores an entire directory.
+      * `*.log`: Ignores any file with the `.log` extension.
+
+-----
 
-* `git commit`: Saves changes to the repository (checkpoint).
+### Branching
 
-* `git log`: View all commits in the repository.
+Branching is a core Git feature that allows developers to work on different features or bug fixes concurrently without affecting the main codebase.
 
-> **Atomic Commits:** Keep each commit focused on a single task or feature.
+  * Each commit has a unique `id` (hash), a `parent_id` (pointing to the previous commit, except for the initial commit), and a `message`.
+  * **Contexts:** Large projects often involve working on multiple features or fixes simultaneously, which branches facilitate.
+  * **Branches:** Represent alternative timelines or lines of development within a project.
 
----
+#### Master vs. Main Branch
 
-### **Editing and Configuring Your Git Commit Editor:**
+  * Historically, the default branch in Git was named `master`.
+  * Since 2020, GitHub has changed its default branch name to `main` for new repositories, although Git itself still defaults to `master` locally.
 
-* **Vim** is the default editor when you run `git commit` without the `-m` flag.
-* To set **VS Code** as your default editor, use:
+#### HEAD Pointer
 
-  ```bash
-  git config --global core.editor "code --wait"
-  ```
+`HEAD` is a symbolic reference that always points to the most recent commit of the currently checked-out branch.
 
----
+  * To view all local branches:
+    ```bash
+    git branch
+    ```
+    The current branch will be highlighted (e.g., with an asterisk).
+  * To create a new branch:
+    ```bash
+    git branch <branchname>
+    ```
+  * To switch to an existing branch:
+    ```bash
+    git switch <branchname>
+    ```
+      * **Note:** `git switch` is a newer, more focused command for changing branches. The older `git checkout` command has broader functionality.
+  * To create and switch to a new branch simultaneously:
+    ```bash
+    git switch -c <branchname>
+    ```
 
-### **Viewing Commit Logs:**
+#### Deleting Branches
 
-* `git log --oneline`: Displays commit history in a single line format.
+  * You cannot delete a branch if you are currently on it. Switch to another branch first.
+  * To safely delete a branch (only if it has been fully merged):
+    ```bash
+    git branch -d <branchname>
+    ```
+  * To force delete a branch (even if it hasn't been merged, use with caution):
+    ```bash
+    git branch -D <branchname>
+    ```
 
----
+-----
 
-### **Amending Commits:**
+### Merging
 
-* `git commit -m "Some commit message"`
-* If you forgot to add a file:
+Merging combines the changes from one branch into another.
 
-  ```bash
-  git add forgotten_file
-  git commit --amend
-  ```
+  * You **merge branches**, not individual commits.
 
----
+  * Always merge into your current `HEAD` branch.
 
-### **Ignoring Files with `.gitignore`:**
+  * **Example:** Merging a `bugfix` branch into `master`:
 
-1. Create a `.gitignore` file in the root of your repository.
-2. Examples:
+    ```bash
+    git switch master
+    git merge bugfix
+    ```
 
-   * `.DS_Store`: Ignores `.DS_Store` files.
-   * `folderName/`: Ignores an entire directory.
-   * `*.log`: Ignores any file with the `.log` extension.
+#### Fast-Forward Merge
 
----
+If the target branch (e.g., `master`) has not diverged from the branch being merged (e.g., `bugfix`), Git performs a fast-forward merge. This simply moves the `master` pointer forward to include the new commits from `bugfix`.
 
-### **Branching:**
+#### Merge Conflicts
 
-* Each commit has three parts: `id`, `parent_id`, and `message`. A parent commit doesn't have a `parent_id` or `parent hash`.
+Conflicts occur when Git cannot automatically reconcile differences between two branches being merged (e.g., if the same line of code was changed differently in both branches).
 
-* **Contexts:** Large projects often work in multiple contexts.
+1.  Git will notify you of conflicts and mark them in the affected files.
+2.  Open the conflicted files in your editor. Git uses **conflict markers**:
+    ```
+    <<<<<<< HEAD
+    // Content from your current branch
+    =======
+    // Content from the branch you are merging
+    >>>>>>> branch-name
+    ```
+3.  Manually edit the file to resolve the conflicts, choosing which content to keep or combining both.
+4.  Remove all conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).
+5.  Stage the resolved file(s):
+    ```bash
+    git add <filename>
+    ```
+6.  Complete the merge by committing:
+    ```bash
+    git commit -m "Resolve merge conflict for feature/X"
+    ```
 
-* **Branches:** Represent alternative timelines of the project.
+-----
 
-> **Master vs Main:**
+### Git Medium Difficulty Topics
 
-* Before 2020, the default branch was named `master`.
-* In 2020, GitHub changed the default branch name to `main`, but Git still uses `master` by default.
+This section delves into more intermediate Git functionalities.
 
----
+#### Git Diff
 
-### **HEAD:**
+`git diff` helps you see the differences between various states of your repository.
 
-`HEAD` is a pointer that always refers to the most recent commit made on the current branch (typically `master` or `main`).
+  * `git diff`: Shows unstaged changes (differences between your working directory and the staging area).
 
-* To view all branches:
+  * `git diff HEAD`: Shows both staged and unstaged changes (differences between your working directory and the latest commit).
 
-  ```bash
-  git branch
-  ```
+  * `git diff --staged`: Shows staged changes (differences between the staging area and the latest commit).
 
-* To create a new branch:
+  * To compare changes for a specific file:
 
-  ```bash
-  git branch <branchname>
-  ```
+    ```bash
+    git diff HEAD <filename>
+    git diff --staged <filename>
+    ```
 
-* To switch to a different branch:
+  * To compare changes across two branches:
 
-  ```bash
-  git switch <branchname>
-  ```
+    ```bash
+    git diff branch1..branch2
+    ```
 
-> **Note:** `git switch` is a newer command. `git checkout` is an older command that can do more things than `git switch`.
+  * To compare changes between two specific commits:
 
-* To create and switch to a new branch at the same time:
+    ```bash
+    git diff commit1..commit2
+    ```
 
-  ```bash
-  git switch -c <branchname>
-  ```
+#### Git Stashing
 
----
+Stashing temporarily saves your uncommitted changes, allowing you to switch branches or perform other operations, and then reapply them later.
 
-### **Deleting Branches:**
+  * **Why use stash?**
 
-* You cannot delete a branch if you are currently in that branch.
-* To delete a branch:
+      * If you have uncommitted changes and try to switch branches, Git might prevent it if conflicts are detected.
+      * If there are no conflicts, your changes will follow you to the new branch, which might not be desired.
 
-  ```bash
-  git branch -d <branchname>  # Safe delete
-  git branch -D <branchname>  # Force delete
-  ```
+  * **Stash Changes:**
 
----
+    ```bash
+    git stash
+    ```
 
-### **Merging:**
+    This saves your current working directory and staging area changes onto a stack and cleans your working directory.
 
-* We **merge branches**, not specific commits.
+  * **Apply Stashed Changes:**
 
-* Always merge into the current `HEAD` branch.
+      * `git stash pop`: Re-applies the most recently stashed changes and removes them from the stash list.
+      * `git stash apply`: Re-applies the most recently stashed changes but keeps them in the stash list. Useful if you want to apply the same stash to multiple branches.
 
-* Example:
+  * **List Stashes:**
 
-  ```bash
-  git switch master
-  git merge bugfix
-  ```
+    ```bash
+    git stash list
+    ```
 
-> **Fast-Forward Merge:** In this case, `master` simply catches up on the commits from `bugfix`.
+    Shows a list of all stashed changes.
 
-* To merge and resolve conflicts:
+  * **Drop a Specific Stash:**
 
-  1. Git will notify you about conflicts.
-  2. Open the conflicted file and resolve it manually.
-  3. Remove conflict markers (`<<<<<`, `=====`, `>>>>>`).
-  4. Stage the resolved file (`git add <filename>`) and commit.
+    ```bash
+    git stash drop stash@{2}
+    ```
 
----
+    Deletes a specific stash from the list (replace `stash@{2}` with the desired stash index).
 
-### **Merge Conflicts:**
+  * **Clear All Stashes:**
 
-* **Conflict markers:**
-  Git places the conflicting content between `<<<<<`, `====`, and `>>>>>`.
+    ```bash
+    git stash clear
+    ```
 
-* **Resolving Conflicts:**
+    Removes all stashed entries.
 
-  1. Open the file with the conflict.
-  2. Decide which content to keep or merge both versions.
-  3. Remove the conflict markers.
-  4. Add and commit your changes.
+#### Undoing Changes & Time Traveling
 
----
+Git provides several ways to undo changes or view previous states of your repository.
 
-### **Git Diff:**
+  * **Checkout to a Specific Commit:**
 
-* `git diff`: Shows changes between your working directory and the staging area (unstaged changes).
+    ```bash
+    git checkout <commit-hash>
+    ```
 
-* `git diff HEAD`: Shows both staged and unstaged changes.
+    This allows you to view the repository's state at a particular commit (you only need the first 7 characters of the hash).
 
-* `git diff --staged`: Shows differences between the staged area and the latest commit.
+      * **Detached HEAD:** When you checkout a specific commit, you enter a "detached HEAD" state. This means `HEAD` is pointing directly to a commit, not to a branch. Any new commits made in this state won't be part of a branch unless you explicitly create one.
+      * **Re-attach HEAD:** To return to a branch, simply switch back to it:
+        ```bash
+        git switch master
+        ```
 
-* To compare changes between specific files:
+  * **Checkout to a Previous Commit Relative to HEAD:**
 
-  ```bash
-  git diff HEAD <filename>
-  git diff --staged <filename>
-  ```
+    ```bash
+    git checkout HEAD~1  # One commit before HEAD
+    git checkout HEAD~2  # Two commits before HEAD
+    ```
 
-* Comparing changes across branches:
+  * **Discarding Changes in a File:**
+    To revert a specific file in your working directory to its state in `HEAD` (the last commit on the current branch):
 
-  ```bash
-  git diff branch1..branch2
-  ```
+    ```bash
+    git checkout HEAD <file>
+    ```
 
-* Comparing changes between specific commits:
+    or the common shortcut:
 
-  ```bash
-  git diff commit1..commit2
-  ```
+    ```bash
+    git checkout -- <file>
+    ```
 
----
+#### Git Restore
 
-### **Git Stashing:**
+The `git restore` command is a newer, more intuitive way to undo changes in your working directory or staging area.
 
-* When you switch branches without committing changes:
+  * `git restore <filename>`: Discards changes in the working directory for `<filename>`, reverting it to the version in the staging area or `HEAD` if not staged.
 
-  1. Changes will follow to the new branch if there are no conflicts.
-  2. Git prevents switching if it detects potential conflicts.
+  * `git restore --source HEAD~1 <filename>`: Restores a file to its state from a specific past commit (e.g., one commit before `HEAD`).
 
-* **Stash Changes:**
+  * **Use case 1: Roll back changes in a file:** If you've made changes to a file but haven't committed them, and you want to discard those changes and revert to the last committed version.
 
-  ```bash
-  git stash
-  ```
+  * **Use case 2: Unstage a file:** If you've added a file to the staging area (`git add`) but decide you don't want to include it in the next commit:
 
-* **Apply Stashed Changes:**
+    ```bash
+    git restore --staged <filename>
+    ```
 
-  ```bash
-  git stash pop  # Re-applies the changes and removes them from stash.
-  git stash apply  # Re-applies the changes but keeps them in stash.
-  ```
+#### Git Reset
 
-* **List Stashes:**
+`git reset` is a powerful command used to undo changes by moving the branch pointer to a different commit.
 
-  ```bash
-  git stash list
-  ```
+  * `git reset <commit-hash>`: Moves the current branch's `HEAD` to the specified `commit-hash`. Changes from commits *after* the `commit-hash` will typically be moved to your staging area (`--soft` default) or working directory (`--mixed` default), but the commits themselves are removed from the branch history.
+  * `git reset --hard <commit-hash>`: **DANGER\!** This moves the current branch's `HEAD` to the specified `commit-hash` and **discards all changes** in both the staging area and working directory that occurred after that commit. Use with extreme caution as it deletes uncommitted work.
 
-* **Drop a Stash:**
+#### Git Revert
 
-  ```bash
-  git stash drop stash@{2}
-  ```
+`git revert` is a safer way to undo changes from a specific commit.
 
-* **Clear All Stashes:**
+  * `git revert <commit-hash>`: Instead of deleting commits from history (like `git reset`), `git revert` creates a **new commit** that undoes the changes introduced by the specified commit. This preserves the project history and is suitable for shared repositories.
 
-  ```bash
-  git stash clear
-  ```
+-----
 
----
+### GitHub
 
-### **Undoing Changes & Time Traveling:**
+GitHub is a widely used web-based platform for hosting Git repositories.
 
-* **Checkout to a Specific Commit:**
+#### Why Use GitHub?
 
-  ```bash
-  git checkout <commit-hash>
-  ```
+  * **Collaboration:** Facilitates teamwork on projects, allowing multiple developers to work on the same codebase.
+  * **Open Source Projects:** A central hub for hosting and contributing to open-source software.
+  * **Exposure:** Provides a portfolio for developers to showcase their work.
+  * **Stay Up-to-Date:** Helps keep track of project changes and contributions.
 
-  This command lets you view a previous commit (you only need the first 7 characters of the hash).
+#### Cloning a Repository
 
-* **Detached HEAD:**
-  This means you're not on any branch, but just viewing a commit. You can create a new branch at this commit.
-
-* **Re-attach HEAD:**
-
-  ```bash
-  git switch master
-  ```
-
-* **Checkout to a Previous Commit Relative to HEAD:**
-
-  ```bash
-  git checkout HEAD~1  # One commit before HEAD
-  git checkout HEAD~2  # Two commits before HEAD
-  ```
-
----
-
-### **Discarding Changes:**
-
-* **Discard changes in a file:**
-
-  ```bash
-  git checkout HEAD <file>
-  ```
-
-  or use the shortcut:
-
-  ```bash
-  git checkout -- <file>
-  ```
-
----
-
-### **Git Restore:**
-
-* `git restore <filename>`: Restores a file to the version in `HEAD`.
-* `git restore --source HEAD~1 <filename>`: Restores a file to a previous commit (e.g., `HEAD~1`).
-
-> **Use case 1:** Roll back changes in a file.
-> **Use case 2:** Unstage a file:
+To get a copy of a remote GitHub repository onto your local machine:
 
 ```bash
-git restore --staged <filename>
+git clone <url>
 ```
 
----
+#### SSH Keys Configuration
 
-### **Git Reset:**
+SSH (Secure Shell) keys provide a secure way to authenticate with GitHub without repeatedly entering your username and password for every `push` operation.
 
-* `git reset <commit-hash>`: Resets the repository to a specific commit. The commits after the reset will be deleted.
+  * To check for existing SSH keys:
+    ```bash
+    ls -al ~/.ssh
+    ```
+  * If you don't have keys, you'll need to generate and configure them with GitHub.
 
-* `git reset --hard <commit-hash>`: Resets the repository and also discards changes in the working directory.
+#### How to Get Your Code on GitHub
 
----
+There are two primary scenarios for pushing your code to GitHub:
 
-### **Git Revert:**
+**Option 1: Existing Local Repository**
 
-* `git revert <commit-hash>`: Similar to reset, but instead of deleting commits, it creates a
+If you already have a Git repository on your local system:
 
+1.  Create a new, empty repository on GitHub.
+2.  Connect your local repository to the GitHub repository by adding a "remote":
+    ```bash
+    git remote add origin <url-of-github-repo>
+    ```
+3.  Push your local changes to GitHub:
+    ```bash
+    git push -u origin master # or main
+    ```
 
-new commit that undoes the changes from the specified commit.
+**Option 2: Starting from Scratch**
 
----
+If you're beginning a new project:
 
+1.  Create a new repository on GitHub.
+2.  Clone it down to your local machine:
+    ```bash
+    git clone <url-of-github-repo>
+    ```
+3.  Do some work locally (add files, make commits).
+4.  Push your changes up to GitHub.
+
+#### Git Remote
+
+A "remote" is a reference to a repository hosted on another server, like GitHub.
+
+  * `git remote`: Lists the shortnames of your configured remotes.
+
+  * `git remote -v`: Shows the shortnames along with their URLs (verbose). You'll typically see `origin` listed for both `fetch` and `push` operations.
+
+  * To add a new remote (e.g., to connect your local repo to a GitHub repo):
+
+    ```bash
+    git remote add <name> <url>
+    ```
+
+    The conventional name for the primary remote is `origin`.
+
+  * `git remote rename <old-name> <new-name>`: Renames an existing remote.
+
+  * `git remote remove <name>`: Deletes a remote.
+
+#### Git Push
+
+`git push` uploads your local commits to a remote repository.
+
+  * Basic push:
+
+    ```bash
+    git push <remote-name> <local-branch-name>
+    ```
+
+    Example:
+
+    ```bash
+    git push origin master
+    ```
+
+  * **Push in Detail (`<local-branch>:<remote-branch>`):**
+    You can specify different names for the local and remote branches during a push:
+
+    ```bash
+    git push <remote> <local-branch>:<remote-branch>
+    ```
+
+    Example: Push your local `pancake` branch to a remote branch named `waffle`:
+
+    ```bash
+    git push origin pancake:waffle
+    ```
+
+  * **The `-u` Option (Set Upstream):**
+    The `-u` (or `--set-upstream`) option tells Git to remember the relationship between your local branch and the remote branch. Once set, you can use a shorthand for future pushes.
+
+    ```bash
+    git push -u origin master
+    ```
+
+    After this, you can simply use `git push` from your local `master` branch, and Git will know to push to `origin/master`.
+
+#### Fetching & Pulling
+
+These commands update your local repository with changes from a remote repository.
+
+  * When working with a remote, Git keeps track of two pointers for a branch, e.g., `master` (your local branch) and `origin/master` (a "Remote Tracking Branch").
+
+  * `origin/master` is a read-only bookmark that reflects the last known state of the `master` branch on the `origin` remote. You cannot directly change `origin/master`.
+
+  * To view all remote tracking branches:
+
+    ```bash
+    git branch -r
+    ```
+
+  * `git fetch`: Downloads commits, files, and refs from a remote repository into your local repository, but **does not** automatically merge them into your current working branch. It only updates the remote-tracking branches (e.g., `origin/master`).
+
+  * `git pull`: This is a combination of `git fetch` and `git merge`. It fetches changes from the remote and then automatically merges them into your current local branch.
+
+-----
+
+### Advanced Git Concepts
+
+This section covers more complex Git operations often used for refining history or managing large projects.
+
+#### Rebasing
+
+Rebasing is a powerful way to rewrite commit history. It takes a series of commits and "replays" them onto a new base commit.
+
+  * **Purpose:** To create a cleaner, linear project history by moving a feature branch to the tip of the main branch.
+  * **How it works:** Git temporarily "saves" your commits, rewinds your branch to the point where the target branch starts, applies all the changes from the target branch, and then reapplies your saved commits on top.
+  * **Caution:** Never rebase commits that have already been pushed to a shared remote repository, as it rewrites history and can cause major issues for collaborators.
+
+#### Interactive Rebasing
+
+Interactive rebase (`git rebase -i`) allows you to modify individual commits in a series during the rebase process. You can:
+
+  * `pick`: Use the commit as is.
+  * `reword`: Change the commit message.
+  * `edit`: Stop to amend the commit (e.g., add more files, fix a bug).
+  * `squash`: Combine commits into a single commit.
+  * `fixup`: Like `squash`, but discards the commit's log message.
+  * `drop`: Delete the commit.
+
+#### Git Tags
+
+Tags are pointers to specific points in Git history, typically used to mark release points (e.g., `v1.0`, `v2.0-beta`).
+
+  * `git tag <tagname>`: Creates a lightweight tag on the current commit.
+  * `git tag -a <tagname> -m "Message"`: Creates an annotated tag, which stores the tagger name, email, date, and a message. Annotated tags are recommended for releases.
+  * `git tag`: Lists all tags.
+  * `git show <tagname>`: Shows details about a specific tag.
+  * To push tags to a remote: `git push origin --tags`
+
+#### Git Behind the Scenes
+
+Git's core is a content-addressable filesystem. It stores data as objects:
+
+  * **Blob:** Stores file content.
+  * **Tree:** Stores directory structure and pointers to blobs and other trees.
+  * **Commit:** Stores metadata (author, committer, message), a pointer to a root tree, and pointers to parent commits.
+
+#### Reflogs
+
+The reflog (`git reflog`) is a local history of all the operations that modify `HEAD` or other references in your repository. It's a safety net for recovering lost commits or states.
+
+  * `git reflog`: Shows a chronological list of where `HEAD` has been.
+  * You can use `git reset HEAD@{n}` (where `n` is the reflog entry number) to revert to a previous state.
+
+#### Custom Aliases
+
+You can create shortcuts (aliases) for frequently used Git commands to save typing and improve workflow.
+
+  * Example: Create an alias `st` for `git status`:
+    ```bash
+    git config --global alias.st status
+    ```
+    Now you can simply type `git st`.
+
+-----
