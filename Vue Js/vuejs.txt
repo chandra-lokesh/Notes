@@ -1,0 +1,283 @@
+====== Vue CLI =======
+npm create vite@latest
+cd vite-project
+npm i
+npm run dev
+======================
+
+
+mention script tags at the end and follow the order:
+cdn comes first then js file script
+
+</body>
+	.
+	.
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="mian.js"></script>
+</body>
+
+- create app and mount particular section of html to the app
+- example: 
+	const app = Vue.creatApp({})
+	app.mount("#app")
+	
+
+STRING INTERPOLATION:
+- declare properties in data() inside createApp() and use it using {{variable_name}} inside html
+- example: 
+		const app = Vue.createApp({
+			data(){
+				return {
+					count : 0,
+					isLoggedIn: false,
+					link: "https://www.google.com",
+					htmlContent: "<h1> Hello world </h1>"
+				}
+			}, 
+			methods: {
+				checkLogin(){
+					this.isLoggedIn = !this.isLoggedIn;
+				}
+			}
+		});
+		app.mount("#app");
+		
+- for attributes of tags in html, use the below format:
+	<a v-bind:href = "link"> Google </a>
+	(or) <a :href = "link"> Google </a>
+	
+- for htmlContent
+	<div v-html="htmlContent"></div>
+	
+EVENT HANDLING:
+<button v-on:click="checkLogin()">Login</button>
+<button @click="checkLogin()">Login</button>
+
+- we can pass event also
+<button @click="checkLogin($event)">Login</button>
+
+- to prevent refreshing of page:
+	methods: {
+        checkLogin(event, name){
+            event.preventDefault(); // this is used
+            this.isLoggedIn = !this.isLoggedIn;
+        }
+    }
+	
+	(or)
+	
+	<a href="" @click.prevent="checkLogin($event, 'Chandra Lokesh')">{{isLoggedIn ? "Logout": "Login"}}</a>
+	
+CONDITIONAL RENDERING:
+<div v-if="isLoggedIn">user is logged in </div>
+<div v-else-if="!isLoggedIn">user is not logged</div>
+<div v-else>In else block</div>
+
+- we can "v-show", if we want to show the unsatisfied condition statements to be shown while rendering in browser.
+- v-if is lazy, cause it won't render if it becomes false.
+
+<div v-show="isLoggedIn">user is logged in </div>
+<div v-show="!isLoggedIn">user is not logged</div>
+
+
+LIST RENDERING:
+<tr v-for="item in list" :key="item.id">
+	<td>{{item.id}}</td>
+    <td>{{item.name}}</td>
+    <td>{{item.uid}}</td>
+    <td><button @click="handleDelete(item.id)">Delete</button></td>
+</tr>
+
+
+TWO WAY DATA BINDING USING V-MODEL:
+v-model -> we can interact template and js without any additional functions 
+example:
+	normal way:
+			<div class="row">
+                <div class="col-md-12">
+                    <label for="name">Name</label>
+                    <input type="text"
+                    :value="name" 
+                    @input="onNameChange($event)">
+                </div>
+                <div class="showName">{{name}}</div>
+            </div>
+	using v-model:
+			<div class="row">
+                <div class="col-md-12">
+                    <label for="name" v-model="name">Name</label>
+                    <input type="text">
+                </div>
+                <div class="showName">{{name}}</div>
+            </div>
+
+
+But, one downside is it renders all the properties and methods, even the state of any one property has been changed.
+example:
+	<input type="text" placeholder="name" v-model="name">
+	<div class="showName">{{greeting()}}</div>
+	<input type="text" placeholder="country" v-model="country">
+	<div class="showCountry">{{country}}</div>
+	
+	- here the greeting method is being invoked everytime when changes happen in country field
+	
+COMPUTED PROPERTIES and WATCH PROPERTIES:
+
+computed properties:
+- will be called for the first time
+- can return some value
+- can have multiple prperties in one function
+
+watch properties:
+- called only when there's a change
+- and can't return values
+- can't have mulitple properties in a function, each watcher is responsible for only one property
+- these are by default LAZY
+
+example: 
+
+    <div class="main">
+        <div>
+            {{watcherMessage}}
+            <hr>
+            {{computedMessage}}
+        </div>
+        <button @click="handleClick">Click</button>
+    </div>
+	
+const app = Vue.createApp({
+    data(){
+        return{
+            isLoggedIn: true,
+            watcherMessage: "",
+        }
+    },
+    methods: {
+        handleClick(){
+            this.isLoggedIn = !this.isLoggedIn;
+        }
+    },
+    watch: {
+        isLoggedIn(){
+            debugger;
+            if(this.isLoggedIn) this.watcherMessage = "Watcher/ User is logged In";
+            else this.watcherMessage = "Watcher/ User is not logged In";
+        }
+    },
+    computed: {
+        computedMessage(){
+            debugger;
+            return this.isLoggedIn ? "Computed/ User is logged In" : "Computed/ User is not logged In";
+        }
+    }
+})
+
+
+DYNAMIC CLASS BINDINGS:
+
+example:
+
+		html ->
+		
+        <div class="container">
+            <!-- <div class="box" @click="handleClick" :class="{active: true}"></div> -->
+            <!-- <div @click="handleClick" :class="{active: activeClass, box: true}"></div> -->
+            <!-- <div class="box" @click="handleClick" :class="activeClass? 'active': ''"></div> -->
+            <!-- <div class="box" @click="handleClick" :class="[activeClass? 'active': '', box]"></div> -->
+             <div :class="boxActiveClasses()" @click="handleClick"></div>
+        </div>
+		
+		app.js ->
+		data(){
+            return{
+                activeClass: false,
+                // boxActiveClasses: {
+                //     box: true,
+                //     active: false
+                // }
+            }
+        },
+        watch:{
+            // activeClass(){
+            //     this.boxActiveClasses.active = this.activeClass;
+            // }
+        },
+        methods: {
+            handleClick(){
+                this.activeClass = !this.activeClass;
+            },
+            boxActiveClasses(){
+                return {
+                    box: true,
+                    active: this.activeClass
+                }
+            }
+        }
+		
+
+
+
+🟢 Level 1: Basics
+-Counter App
+
+Show a number on screen.
+
+Add buttons to increment and decrement it.
+
+-Text Reverser
+
+Input box for user to type.
+
+Display the reversed version of the input in real-time.
+
+-Simple Click Tracker
+
+Show how many times a button was clicked.
+
+Track clicks for multiple buttons separately.
+
+🟡 Level 2: Lists & Forms
+-Basic Todo List
+
+Input to add a todo.
+
+Display todos using a list.
+
+Button to remove a todo.
+
+-Favorite Movies List
+
+Form to add a movie title.
+
+Display added movies.
+
+Add a "Like" counter to each item.
+
+-Simple Survey Form
+
+Create a form with a few fields (name, email, rating).
+
+Show submitted data below the form.
+
+🔵 Level 3: Components & Interaction
+-Toggle Box Component
+
+Create a reusable component that shows/hides its content when a button is clicked.
+
+-Modal Pop-up
+
+Button to open a modal.
+
+Modal is a separate component.
+
+Close modal on click.
+
+-Counter Component
+
+Create a Counter component.
+
+Use it multiple times with independent counts.
+
+
+
+

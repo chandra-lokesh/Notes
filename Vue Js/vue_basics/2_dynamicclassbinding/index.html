@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Class Bindings</title>
+    <style>
+        .box{
+            width: 200px;
+            height: 200px;
+            border: green 2px solid;
+        }
+        .active{
+            background: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <!-- <div class="box" @click="handleClick" :class="{active: true}"></div> -->
+            <!-- <div @click="handleClick" :class="{active: activeClass, box: true}"></div> -->
+            <!-- <div class="box" @click="handleClick" :class="activeClass? 'active': ''"></div> -->
+            <!-- <div class="box" @click="handleClick" :class="[activeClass? 'active': '', box]"></div> -->
+             <div :class="boxActiveClasses()" @click="handleClick"></div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

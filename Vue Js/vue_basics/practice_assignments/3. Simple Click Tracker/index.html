@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Click Tracker</title>
+    <style>
+        #main div{
+            border: 2px solid grey;
+            width: 200px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main">
+        <div v-for="c in counters" :key="c.id">
+            <p>Counter: <b>{{c.counter}}</b></p>
+            <button @click="handleClick(c.id)" >Click</button>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

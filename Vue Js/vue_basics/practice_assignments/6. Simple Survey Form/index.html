@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Survey Form</title>
+    <style>
+        th, td{
+            border: 1px solid black;
+            padding: 4px 10px;
+        }
+        select{
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="main">
+        <form>
+            <p>Enter Name: <input type="text" v-model="newName"></p>
+            <p>Enter Email: <input type="email" v-model="newEmail"></p>
+            <p>Select Rating: </p>
+            <select v-model="newRating">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select> <br>
+            <input type="submit" value="Submit" @click.prevent="submitForm()">
+        </form>
+
+        <h2>Ratings List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="f in formList" :key="f.id">
+                    <td>{{f.name}}</td>
+                    <td>{{f.email}}</td>
+                    <td>
+                        <span v-for="s in Number(f.rating)" :key="s">⭐</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

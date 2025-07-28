@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+    <style>
+        .todolist{
+            border: 2px solid grey;
+            width: 200px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main">
+        <div class="add">
+            <p>Enter Todo Item: <input type="text" v-model="newItem" @keyup.enter="addToDoItem"></p>
+            <button @click="addToDoItem()">Add Item</button>
+        </div>
+        <div class="todolist" v-for="l in list" :key="l.id">
+            {{l.content}}
+            <button @click="deleteTodoItem(l.id)">Delete</button>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app">
+        <a :href="link">Go to google.com</a>
+        <div v-show="isLoggedIn">user is logged in </div>
+        <div v-show="!isLoggedIn">user is not logged</div>
+        <div>
+            <!-- <button @click="checkLogin($event)">{{isLoggedIn ? "Logout": "Login"}}</button> -->
+            <a href="" @click.prevent="checkLogin('Chandra Lokesh')">{{isLoggedIn ? "Logout": "Login"}}</a>
+        </div>
+        <div v-for="(value, key) in person">
+            <p>{{value}}</p>
+            <hr>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(post, index) in posts">
+                    <td>{{post.id}}</td>
+                    <td>{{index}}</td>
+                    <td>{{post.title}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="mian.js"></script>
+</body>
+</html>

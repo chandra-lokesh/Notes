@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favourite Movies List</title>
+    <style>
+        #main{
+            width: fit-content;
+            margin: auto;
+            text-align: center;
+        }
+        .styling{
+            border: 2px solid grey;
+            width: 200px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .styling p b{
+            font-size: 1.3rem;
+        }
+        .likesContainer{
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+        button{
+            width: 40%;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main">
+        <h2>Favourite Movies</h2>
+        <div class="styling">
+            <p>Enter Movie Name: <input type="text" v-model="newMovie" @keyup.enter="addMovie()"></p> 
+            <button @click="addMovie()" :disabled="newMovie.trim() === ''">Add Movie</button>
+        </div>
+        <div class="styling" v-for="m in favMovies" :key="m.id">
+            <p>Movie Name <b>{{m.name}}</b></p>
+            
+            <div class="likesContainer">
+                <p>{{m.likes}} Likes</p>
+                <button @click="addLike(m.id)">Like</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
