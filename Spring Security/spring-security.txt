@@ -1,0 +1,97 @@
+------- SPRING SECURITY -------
+
+																											                                                                                request 											                                                                                     <-------------- 
+[controllers <- front controller (dispatcher servlet) <- Filter Chain (multiple filters f1, f2, f3, ...)]			Client
+						tomcat server																	                                      								     -------------->
+														response
+
+CSRF -> cross sight request forgery
+
+* for PUT, POST, DELETE you need csrf  token
+* disadvantage of sessionid is, sameId is used for authentication everytime, with our sessionid someone can hack into our account.
+* by default spring security manages this with csrf token.
+
+use below key value pair inside headers in postman to make put, post or delete api call
+key -> X-CSRF-TOKEN
+value -> available in template in logout screen or get using code (request.getAttribute("_csrf"))
+
+* if we want to use the default security, we need to pass csrf token everytime in headers
+* if we somehow generate sessionid everytime, we can disable csrf
+* to customize filters, create a config class define beans there to inject objectr
+
+
+SecurityConfig.java:
+
+@Configuration -> to let know that the file is to configure
+@EnableWebSecurity -> to tell that we are using customised filter chain configuration
+
+http.csrf(customizer -> customizer.disable())
+-> to disable csrf, which means authentication is disabled
+
+http.authorizeHttpRequests(req -> req.anyRequest().authenticated())
+-> asks for authentication but we cannot authorize, because it doesn't accept any authentication credentials through form login or http basic login
+
+http.formLogin(Customizer.withDefaults())
+-> enables form login with defined default credentials, here we can't use postman because it returns html form in response if you send request giving basic auth.
+
+http.httpBasic(Customizer.withDefaults())
+-> enables basic auth (in postman, we can access api's by passing credentials)
+
+http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+-> to generate unique sessionId everytime we load the page, In browser we can't see the response because of httpformlogin, ensure it is disabled to use above session management
+
+@Bean
+public UserDetailsService userDetailsService(){
+    return new InMemoryUserDetailsManager();
+}
+
+this bean is used to customize the userdetails instead of default
+
+UserDetails user1 = User
+                .withDefaultPasswordEncoder()
+                .username("test1")
+                .password("test1")
+                .roles("USR")
+                .build();
+-> used to define user and can be passed to the InMemoryUserDetailsManager(user1)
+
+
+Un-authenticated object                                      authenticated object
+Authentication Object  ---->  Authentication Provider ----> Authentication Object
+
+* Similarly if we need to implement with database, we need to define AuthenticationProvider, here it's an interface, there are many classes extending this interface, but for db we need to use DaoAuthenticationProvider
+* DaoAuthenticationProvider needs UserDetailsService
+* So create a class implementing UserDetailsService class and implement loadUserByUsername() in it
+
+Encryption:
+plain text (key)-> cipher text (key)-> plain text
+* problem with this encryption is, if key is compromised, then password are also compromised
+
+hashing:
+plain text -> hash
+* we can't decode text from hash
+* ex: SHA 256 
+
+* In service layer, we can create BCrypt Object and use it to encode password befor saving.
+* but when we need update provider.setPasswordEncoder(NoOpPasswordEncoder.getInstance()) -> provider.setPasswordEncoder(new BCryptPasswordEncoder(12))
+
+
+
+JWT -> Json Web Token
+SSO -> Single sign on
+
+-> Earlier days people used xml format for jwt
+-> provlem with xml is, it is bulky
+-> JSON is the new format used
+
+JWT Token -> HEADER - Algo & Token Type ; PAYLOAD - Data
+
+Algo's ->
+HS -> HMac
+RS -> RSA
+ES
+* RS and ES are asymmetrical cryptography which means it uses public & private keys
+
+Validate Token:
+initially UPAF (user password authentication filter) is the first one to encounter http request
+we need to make it after the jwtfilter
