@@ -6,10 +6,32 @@
 ---
 
 ## 1. Request Flow in Spring MVC + Security
-
 ```
-Client <-------------- Request -------------- [Controllers <- Front Controller (DispatcherServlet) <- Filter Chain (f1, f2, f3, ...)] --------------> Response
-                                                  (Tomcat Server)
+Client
+  |
+  | 1. HTTP Request
+  V
+Tomcat Server (Servlet Container)
+  |
+  | 2. Filter Chain (e.g., f1 -> f2 -> f3 ...)
+  V
+DispatcherServlet (Front Controller)
+  |
+  | 3. Handler Mapping -> Controller
+  V
+Controller
+  |
+  | 4. Business logic, Service calls, etc.
+  V
+Model & View
+  |
+  | 5. View Resolver
+  V
+Response Rendering (e.g., JSP, Thymeleaf)
+  |
+  | 6. HTTP Response
+  V
+Client
 ```
 
 ---
