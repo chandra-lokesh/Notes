@@ -16,7 +16,7 @@ public class UserService {
     private UserRepo userRepo;
 
     @Autowired
-    private JWTService jwtService;
+    private JwtService jwtService;
 
     @Autowired
     AuthenticationManager authManager;

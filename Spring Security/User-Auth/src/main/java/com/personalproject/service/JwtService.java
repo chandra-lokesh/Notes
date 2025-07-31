@@ -17,11 +17,11 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JWTService {
+public class JwtService {
 
     private String SECRET_KEY = "";
 
-    public JWTService() throws NoSuchAlgorithmException {
+    public JwtService() throws NoSuchAlgorithmException {
         try {
             KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
             SecretKey sk = keyGen.generateKey();

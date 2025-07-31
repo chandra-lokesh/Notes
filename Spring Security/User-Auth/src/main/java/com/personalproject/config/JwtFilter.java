@@ -1,6 +1,6 @@
 package com.personalproject.config;
 
-import com.personalproject.service.JWTService;
+import com.personalproject.service.JwtService;
 import com.personalproject.service.MyUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,7 +21,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
-    JWTService jwtService;
+    JwtService jwtService;
 
     @Autowired
     ApplicationContext context;
